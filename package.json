@@ -1,0 +1,22 @@
+{
+  "name": "@peter.naydenov/log",
+  "version": "1.0.0",
+  "description": "Controlable console message system",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
+  },
+  "keywords": [
+    "console",
+    "log",
+    "error",
+    "warn"
+  ],
+  "author": "Peter Naydenov",
+  "license": "MIT"
+}
