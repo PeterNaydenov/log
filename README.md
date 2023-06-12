@@ -1,5 +1,9 @@
 # Log ( @peter.naydenov/log )
+
 *Documentation is under heavy development*
+
+
+
 Log message system with controllable message activity levels.
 
 Simplest possible use case:
