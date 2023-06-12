@@ -4,11 +4,13 @@
 
 
 
-Log message system with controllable message activity levels.
+Log message system with controllable message activity levels and customizable log-function. 
+
+You need a messages during debug process but you don't want to see them in production. Log system has single point of setting it as active or not active and how verbose should be. 
 
 Simplest possible use case:
 ```js
-const log = createLog ();
+const log = createLog ();  // Create a log function with all default settings
 log ({message:'hello'})
 // -> console message '[debug]: hello'
 
@@ -30,7 +32,7 @@ log ({message:'again'})
 
 
 ## createLog ()
-Activity levels are custom created per use case.
+
 ```js
 import createLog from '@peter.naydenov/log'
 
@@ -61,8 +63,5 @@ log ({
     })
 
 ```
-You need a messages during debug proccess but you don't want to see them in production. Log system has single point for setting it active or not active and how verbose should be. 
+Activity levels - you can define different levels of message importance and use levels as filter factor.
 
-Library `log` can executes a function instead of sending information to the console. You should initialize it with the function otherwise `log` will use the default log method - sending the information to the console.
-
-Levels of verbose - you can define different levels of message importance and use them as filter factor.
