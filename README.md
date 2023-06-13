@@ -1,15 +1,15 @@
 # Log ( @peter.naydenov/log )
 
-*Documentation is under heavy development*
-
-
-
 Log message system with customizable log-function and controllable message activity levels. 
 
+## Why?
 You need a messages during debug process but you don't want to see them in production. Log system has single point of setting it as active or not active and how verbose should be. 
 
-Latter on you can change your log-function to send messages to your external logging solution.
+Another option is to modify your log-function to send messages to your external logging solution.
 
+
+
+## How to use it?
 Simplest possible use case:
 ```js
 const log = createLog ();  // Create a log function with all default settings
@@ -33,8 +33,21 @@ log ({message:'again'})
 // Message 'again' will not be ignored because default message level is 1
 ```
 
+## Installation
+Write into the console:
+```
+npm i @peter.naydenov/log
+```
+
+Import in your project
+```js
+import createLog from '@peter.naydenov/log'
+```
+
+
 
 ## createLog ()
+The function `createLog` will generate log function for you. You have defaults, so you can call `createLog` without parameters. Providing a parameters can customize your 'log' behaviour. Result of calling `createLog` is a function.
 
 ```js
 import createLog from '@peter.naydenov/log'
