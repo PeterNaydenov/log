@@ -1,7 +1,7 @@
 {
   "name": "@peter.naydenov/log",
   "version": "1.0.0",
-  "description": "Controlable console message system",
+  "description": "Controlable log message system",
   "main": "src/main.js",
   "type": "module",
   "scripts": {

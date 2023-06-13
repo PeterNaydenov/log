@@ -4,15 +4,18 @@
 
 
 
-Log message system with controllable message activity levels and customizable log-function. 
+Log message system with customizable log-function and controllable message activity levels. 
 
 You need a messages during debug process but you don't want to see them in production. Log system has single point of setting it as active or not active and how verbose should be. 
+
+Latter on you can change your log-function to send messages to your external logging solution.
 
 Simplest possible use case:
 ```js
 const log = createLog ();  // Create a log function with all default settings
 log ({message:'hello'})
-// -> console message '[debug]: hello'
+// -> console message '[debug]: hello'  
+// if you don't provide your log-function, there is a default function that will create and send a console message.
 
 // If we want to stop all messages to console, change a log definition
 // was -> const log = createLog ();
@@ -39,8 +42,9 @@ import createLog from '@peter.naydenov/log'
 const log = createLog ( options, logFunction )   // Create a log
 
 /**
+ *  options - object. If you need to provide logFunction but no options -> set it to empty object. {} 
  *  option properties:
- *   - level: Available to logFunction as 'logLevel'
+ *   - level: Available to logFunction as 'logLevel'.
  *   - type: Overwrite default message type
  *   - deffaultMessageLevel: Overwrite default message level
  *   - all custom props are available in logFunction
@@ -61,7 +65,16 @@ log ({
         // level : 2 // (optional) Activity level of this specific message. Deffault is 1.
         // type : 'error' // (optional). Type of the message: 'error', 'warning', or 'log'
     })
-
 ```
 Activity levels - you can define different levels of message importance and use levels as filter factor.
 
+
+
+
+## Credits
+'@peter.naydenov/log' was created and supported by Peter Naydenov.
+
+
+
+## License
+'@peter.naydenov/log' is released under the MIT License.
