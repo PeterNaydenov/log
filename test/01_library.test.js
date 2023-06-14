@@ -5,6 +5,8 @@ import createLog from '../src/main.js'
 
 describe ( 'Log library', () => {
 
+
+
 it ( 'Log arguments: options and logFunction', () => {
         const
               msg = 'Here we are'
@@ -71,6 +73,7 @@ it ( 'Extra log arguments', () => {
 }) // it extra arguments
 
 
+
 it ( 'Default logFunction', () => {
      const 
           msg = 'My message'
@@ -83,7 +86,31 @@ it ( 'Default logFunction', () => {
         ;
     expect ( res1 ).to.be.equal ( '[Debug]: My message' )
     expect ( res2 ).to.be.null
-})
+}) // it default logFunction
+
+
+
+it ( 'Custom level system based on words', () => {
+    const
+            msg = 'My message'
+          , log = createLog (
+                               { level: 'basic'}
+                             , ({ message, level, logLevel }) => {
+                                        if ( level.includes(logLevel) ) {
+                                                 return message
+                                            }   
+                                        return null
+                                  }) 
+          ;
+    let 
+         res1 = log ({ message: msg, level: [ 'basic', 'warning', 'all'] })
+      ,  res2 = log ({ message: msg, level: [ 'warning', 'all'] })
+      ;
+
+    expect ( res1 ).to.be.equal ( msg )
+    expect ( res2 ).to.be.null
+}) // it Custom level system based on words
+
 
 }) // describe
 
