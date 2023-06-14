@@ -79,7 +79,45 @@ log ({
         // type : 'error' // (optional). Type of the message: 'error', 'warning', or 'log'
     })
 ```
-Activity levels - you can define different levels of message importance and use levels as filter factor.
+
+
+
+## Activity levels
+
+Default activity levels works like that:
+- Setup a log-level by setting a property `level` in option object during '**createLog**' function call. If it's not defined, log-level will be 1000. Idea behind log-level is to minimize the amount of messages by setting smaller log-level. If you want to ignore all messages, set log-level to 0;
+- If **message** has a `level` property, it will be used as message level. If not, default message level will be used. Default message level is 1;
+- If message level is higher then log-level, message will be ignored. If message level is equal or lower then log-level, message will be processed;
+
+You have the power to build your own activity levels. Here is how:
+
+```js
+const
+      msg = 'My message' // Some message
+    , msgDefault = ['basic','warning', 'all' ] // Define default message level
+    , log = createLog (
+                          { 
+                                level: 'basic'                    // Setup a log-level
+                              , defaultMessageLevel: msgDefault   // Setup default message level if not defined
+                          }
+                        , ({ message, level, logLevel }) => { // Custom log-function
+                                  if ( level.includes(logLevel) ) {   // Test if log-level is included in message level
+                                            return message
+                                      }   
+                                  return null
+                            }) 
+    ;
+ let 
+         res1 = log ({ message: msg, level: [ 'basic', 'warning', 'all'] })
+      ,  res2 = log ({ message: msg, level: [ 'warning', 'all'] }) // Log-level is not included in message level, so the message will be ignored. Will return null
+      ,  res3 = log ({ message: msg }) // Message level is not set and will get default message level
+      ;
+// res1 -> 'My message'
+// res2 -> null
+// res3 -> 'My message'
+```
+
+
 
 
 

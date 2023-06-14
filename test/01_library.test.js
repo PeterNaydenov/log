@@ -93,8 +93,9 @@ it ( 'Default logFunction', () => {
 it ( 'Custom level system based on words', () => {
     const
             msg = 'My message'
+          , msgDefault = ['basic','warning', 'all' ]
           , log = createLog (
-                               { level: 'basic'}
+                               { level: 'basic', defaultMessageLevel: msgDefault }
                              , ({ message, level, logLevel }) => {
                                         if ( level.includes(logLevel) ) {
                                                  return message
@@ -105,10 +106,12 @@ it ( 'Custom level system based on words', () => {
     let 
          res1 = log ({ message: msg, level: [ 'basic', 'warning', 'all'] })
       ,  res2 = log ({ message: msg, level: [ 'warning', 'all'] })
+      ,  res3 = log ({ message: msg })
       ;
 
     expect ( res1 ).to.be.equal ( msg )
     expect ( res2 ).to.be.null
+    expect ( res3 ).to.be.equal ( msg )
 }) // it Custom level system based on words
 
 
