@@ -7,6 +7,8 @@ You need a messages during debug process but you don't want to see them in produ
 
 Another option is to modify your log-function to send messages to your external logging solution.
 
+Take a look on `Alternative Ideas` section for other ideas how to use it.
+
 
 
 ## How to use it?
@@ -117,8 +119,29 @@ const
 // res3 -> 'My message'
 ```
 
+# Alternative Ideas
 
+Library `log` is prety abstract, so we can use it in different ways. Here are some ideas:
+ - Wrap code for execute it only for specific user role;
+```js
+let
+      a = 'not changes'
+    , user = { role: 'guest' }
+    ;
+const roleSpecific = createLog (
+                                  { level : user.role },
+                                  ({ level, logLevel, fn }) => {
+                                          if ( level.includes(logLevel)  ) {   // execute user role specific code..
+                                                  return fn()
+                                              }
+                                    return null
+                              });
 
+roleSpecific ({ level: [ 'admin', 'owner'], fn: () => a = 'admin changed' }) // We don't need a message property here...
+// ->  a = 'not changes'
+roleSpecific ({ level: [ 'guest'], fn: () => a = 'guest changed' })
+// -> a = 'guest changed'
+```
 
 
 
