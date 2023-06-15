@@ -4,6 +4,10 @@
   "description": "Controlable log message system",
   "main": "src/main.js",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PeterNaydenov/log"
+  },
   "scripts": {
     "test": "mocha test"
   },

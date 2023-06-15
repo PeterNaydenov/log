@@ -138,9 +138,9 @@ const roleSpecific = createLog (
                               });
 
 roleSpecific ({ level: [ 'admin', 'owner'], fn: () => a = 'admin changed' }) // We don't need a message property here...
-// ->  a = 'not changes'
+// ->  a === 'not changes'
 roleSpecific ({ level: [ 'guest'], fn: () => a = 'guest changed' })
-// -> a = 'guest changed'
+// -> a === 'guest changed'
 ```
 
 
