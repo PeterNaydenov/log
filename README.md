@@ -119,7 +119,7 @@ const
 // res3 -> 'My message'
 ```
 
-# Alternative Ideas
+## Alternative Ideas
 
 Library `log` is prety abstract, so we can use it in different ways. Here are some ideas:
  - Wrap code for execute it only for specific user role;
