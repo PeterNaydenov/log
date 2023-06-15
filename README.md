@@ -129,7 +129,10 @@ let
     , user = { role: 'guest' }
     ;
 const roleSpecific = createLog (
-                                  { level : user.role },
+                                  { 
+                                        defaultMessageLevel: [ 'guest', 'admin', 'owner' ] 
+                                      , level : user.role
+                                    },
                                   ({ level, logLevel, fn }) => {
                                           if ( level.includes(logLevel)  ) {   // execute user role specific code..
                                                   return fn()
@@ -141,6 +144,9 @@ roleSpecific ({ level: [ 'admin', 'owner'], fn: () => a = 'admin changed' }) // 
 // ->  a === 'not changes'
 roleSpecific ({ level: [ 'guest'], fn: () => a = 'guest changed' })
 // -> a === 'guest changed'
+
+roleSpecific ({ fn: () => a = 'general code' }) // When level is not provided, default message level will be used: [ 'guest', 'admin', 'owner' ]
+// -> a === 'general code'
 ```
 
 

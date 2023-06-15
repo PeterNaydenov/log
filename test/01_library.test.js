@@ -123,7 +123,10 @@ it ( 'Log as a wrapper for user role specific code', () => {
          ;
     const
         roleSpecific = createLog (
-                                  { level : user.role },
+                                  { 
+                                        defaultMessageLevel: [ 'admin', 'owner', 'guest' ]
+                                      , level : user.role 
+                                    },
                                   ({ level, logLevel, fn }) => {
                                           if ( level.includes(logLevel)  ) {   // execute user role specific code..
                                                   return fn()
@@ -133,8 +136,12 @@ it ( 'Log as a wrapper for user role specific code', () => {
 
     roleSpecific ({ level: [ 'admin', 'owner'], fn: () => a = 'admin changed' })
     expect ( a ).to.be.equal ( 'not changes' )
+
     roleSpecific ({ level: [ 'guest'], fn: () => a = 'guest changed' })
     expect ( a ).to.be.equal ( 'guest changed' )
+    
+    roleSpecific({ fn:() => a = 'general code'})
+    expect ( a ).to.be.equal ( 'general code' )
 }) // it Log as a wrapper for user role specific code
 
 }) // describe
