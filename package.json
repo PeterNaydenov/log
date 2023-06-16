@@ -1,6 +1,6 @@
 {
   "name": "@peter.naydenov/log",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Controlable log message system",
   "main": "src/main.js",
   "type": "module",
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "mocha test",
-    "cover" : "c8 mocha test"
+    "cover": "c8 mocha test"
   },
   "devDependencies": {
     "c8": "^8.0.0",
