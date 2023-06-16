@@ -1,6 +1,8 @@
 # Log ( @peter.naydenov/log )
 
+![version](https://img.shields.io/github/package-json/v/peterNaydenov/log)
 ![MIT](https://img.shields.io/github/license/peterNaydenov/log)
+
 
 Log message system with customizable log-function and controllable message activity levels. 
 
