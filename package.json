@@ -13,8 +13,8 @@
     "cover": "c8 mocha test"
   },
   "devDependencies": {
-    "c8": "^8.0.1",
-    "chai": "^4.3.10",
+    "c8": "^9.1.0",
+    "chai": "^5.0.3",
     "mocha": "^10.2.0"
   },
   "c8": {
