@@ -49,6 +49,10 @@ Import in your project
 ```js
 import createLog from '@peter.naydenov/log'
 ```
+or require it
+```js
+const createLog = require('@peter.naydenov/log')
+```
 
 
 

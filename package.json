@@ -1,21 +1,38 @@
 {
   "name": "@peter.naydenov/log",
-  "version": "1.0.1",
   "description": "Controlable log message system",
-  "main": "src/main.js",
+  "version": "1.0.1",
+  "license": "MIT",
+  "author": "Peter Naydenov",
+  "main": "./dist/log.umd.js",
   "type": "module",
+  "exports": {
+      ".": {
+              "import": "./dist/log.esm.mjs",
+              "require": "./dist/log.cjs",
+              "default": "./dist/log.umd.js"
+            },
+        "./package.json": "./package.json",
+        "./dist/*": "./dist/*",
+        "./src/*": "./src/*"
+    },
+  "scripts": {
+    "test": "mocha test",
+    "cover": "c8 mocha test",
+    "build": "rollup -c"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/PeterNaydenov/log.git"
   },
-  "scripts": {
-    "test": "mocha test",
-    "cover": "c8 mocha test"
-  },
   "devDependencies": {
     "c8": "^9.1.0",
     "chai": "^5.0.3",
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.9.6"
   },
   "c8": {
     "include": [
@@ -35,7 +52,5 @@
     "log",
     "error",
     "warn"
-  ],
-  "author": "Peter Naydenov",
-  "license": "MIT"
+  ]
 }
