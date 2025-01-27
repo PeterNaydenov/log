@@ -2,6 +2,11 @@
 
 
 
+### 1.1.1 (2025-01-27)
+- [x] JsDoc description was added to the project;
+
+
+
 ## 1.1.0 (2024-02-02)
 - [x] Rollup was added to the project. Used to build the library versions;
 - [x] Folder 'dist' was added to the project. Includes commonjs, umd and esm versions of the library;
