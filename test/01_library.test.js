@@ -74,6 +74,28 @@ it ( 'Extra log arguments', () => {
 
 
 
+it ( 'Explicit level 0 is preserved (not overwritten by defaultMessageLevel)', () => {
+        const
+              msg = 'Lowest level message'
+            , log = createLog (
+                                { level: 5 },
+                                ({ level, logLevel }) => ({ level, logLevel })
+                            )
+            ;
+
+        let
+              res1 = log ({ message: msg, level: 0 })
+            , res2 = log ({ message: msg, level: null })
+            , res3 = log ({ message: msg })  // no level -> should fall back to defaultMessageLevel (1)
+            ;
+
+        expect ( res1 ).to.deep.equal ({ level: 0, logLevel: 5 })
+        expect ( res2 ).to.deep.equal ({ level: 1, logLevel: 5 })  // null is treated as "not provided"
+        expect ( res3 ).to.deep.equal ({ level: 1, logLevel: 5 })
+}) // it explicit level 0 is preserved
+
+
+
 it ( 'Default logFunction', () => {
      const 
           msg = 'My message'
