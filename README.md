@@ -1,168 +1,187 @@
-# Log ( @peter.naydenov/log )
+# Log (`@peter.naydenov/log`)
 
-![version](https://img.shields.io/github/package-json/v/peterNaydenov/log)
-![license](https://img.shields.io/github/license/peterNaydenov/log)
+[![version](https://img.shields.io/github/package-json/v/peterNaydenov/log)](https://www.npmjs.com/package/@peter.naydenov/log)
+[![license](https://img.shields.io/github/license/peterNaydenov/log)](#license)
 
+A small logging system with a single point of control: filter messages by activity level and route them to any sink you want — the console, an external service, or your own logic.
 
-Log message system with customizable log-function and controllable message activity levels. 
+- **Level-based filtering** — set a threshold once and messages above it are dropped.
+- **Pluggable handler** — the default routes to `console`; swap in anything.
+- **Zero dependencies**, works in Node, browsers, and bundlers.
+- **TypeScript-ready** — ships with `.d.ts` declarations.
 
 ## Why?
-You need a messages during debug process but you don't want to see them in production. Log system has single point of setting it as active or not active and how verbose should be. 
 
-Another option is to modify your log-function to send messages to your external logging solution.
+You want debug messages during development but not in production. `log` lets you set one threshold to silence everything (`level: 0`) and tune verbosity without touching call sites.
 
-Take a look on `Alternative Ideas` section for other ideas how to use it.
-
-
-
-## How to use it?
-Simplest possible use case:
-```js
-const log = createLog ();  // Create a log function with all default settings
-log ({message:'hello'})
-// -> console message '[debug]: hello'  
-// if you don't provide your log-function, there is a default function that will create and send a console message.
-
-// If we want to stop all messages to console, change a log definition
-// was -> const log = createLog ();
-// to -> const log = createLog ({level:0});
-// log-level 0 definition will ignore all the messages provided to the log
-```
-
-Let's see a another example:
-
-```js
-const log = createLog ({level:2});
-log ({message: 'Sweet'}, level:3 )
-// log will ignore message 'sweet', because message level is lower then log-level. This definition of the log will show only level 1 and level 2 of the messages.
-log ({message:'again'})
-// Message 'again' will not be ignored because default message level is 1
-```
+It's also abstract enough to drive non-logging workflows — see [Alternative Ideas](#alternative-ideas).
 
 ## Installation
-Write into the console:
-```
-npm i @peter.naydenov/log
+
+```bash
+npm install @peter.naydenov/log
 ```
 
-Import in your project
+ESM:
+
 ```js
 import createLog from '@peter.naydenov/log'
 ```
-or require it
+
+CommonJS:
+
 ```js
 const createLog = require('@peter.naydenov/log')
 ```
 
-
-
-## createLog ()
-The function `createLog` will generate log function for you. You have defaults, so you can call `createLog` without parameters. Providing a parameters can customize your 'log' behaviour. Result of calling `createLog` is a function.
+## Quick start
 
 ```js
 import createLog from '@peter.naydenov/log'
 
-const log = createLog ( options, logFunction )   // Create a log
+const log = createLog()                       // defaults → logs everything
+const result = log({ message: 'hello' })
+// console: [Debug]: hello
+// result === '[Debug]: hello'                ← default handler returns the formatted string
 
-/**
- *  options - object. If you need to provide logFunction but no options -> set it to empty object. {} 
- *  option properties:
- *   - level: Available to logFunction as 'logLevel'.
- *   - type: Overwrite default message type
- *   - deffaultMessageLevel: Overwrite default message level
- *   - all custom props are available in logFunction
- * 
- * 
- *  logFunction: 
- *   - a function that will be returned on calling a 'log' with a log-object
- *   - the logFunction could return a promise if it's needed 
- *  
- *  Note: options and logFunction are optional arguments.
- * 
- *  log is a function that expect a log-object
- *  log ( logObject ) -> will return the result of logFunction
- */
-
-log ({ 
-          message: 'Hello'  // (required) Provide a message
-        // level : 2 // (optional) Activity level of this specific message. Deffault is 1.
-        // type : 'error' // (optional). Type of the message: 'error', 'warning', or 'log'
-    })
+// Silence everything
+const silent = createLog({ level: 0 })
+silent({ message: 'never logged' })           // -> null, nothing printed
 ```
 
+## API
 
+### `createLog(options?, logFunction?) → log`
+
+Creates and returns a `log` function.
+
+#### `options`
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `level` | `number \| string \| string[]` | `1000` | Threshold. Calls whose `level` is higher are ignored. Use `0` to silence everything (with the default handler). |
+| `type` | `string` | `'log'` | Default message type. The default handler routes `'warn'` → `console.warn`, `'error'` → `console.error`, anything else → `console.log`. |
+| `defaultMessageLevel` | `number \| string \| string[]` | `1` | Level applied when a call does not provide its own `level`. |
+
+Any extra properties on `options` are forwarded to `logFunction` as part of each payload.
+
+#### `logFunction`
+
+```ts
+type LogFunction = (payload: LogPayload) => unknown
+```
+
+Custom handler invoked for each call. Receives the merged payload (`options` defaults + per-call input, with `logLevel` injected). Its return value is propagated back to the caller of `log`, so it may return a `Promise`.
+
+#### Return: `log(input)`
+
+```ts
+type LogInput = {
+  message: string
+  type?: string
+  level?: number | string | string[]
+  [key: string]: unknown
+}
+
+log(input: LogInput): unknown
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `message` | `string` | Required. The message text. |
+| `level` | `number \| string \| string[]` | Per-call level. Falls back to `defaultMessageLevel`. |
+| `type` | `string` | Per-call type override. Falls back to the `type` option. |
+| `extra` | `unknown` | Any additional properties are forwarded to `logFunction`. |
+
+Both `level` and `type` also accept `null` (or `undefined`), which means "not provided" and triggers the fallback.
 
 ## Activity levels
 
-Default activity levels works like that:
-- Setup a log-level by setting a property `level` in option object during '**createLog**' function call. If it's not defined, log-level will be 1000. Idea behind log-level is to minimize the amount of messages by setting smaller log-level. If you want to ignore all messages, set log-level to 0;
-- If **message** has a `level` property, it will be used as message level. If not, default message level will be used. Default message level is 1;
-- If message level is higher then log-level, message will be ignored. If message level is equal or lower then log-level, message will be processed;
+The default numeric scheme is straightforward:
 
-You have the power to build your own activity levels. Here is how:
+- **Lower threshold = more verbose.** `level: 1000` (default) lets everything through; `level: 1` shows only the most important messages.
+- **`level: 0` is silent** — the default handler treats it as a special "stop everything" signal and returns `null`.
+- **Default message level is `1`** — most calls can omit `level` and still be processed.
+- **`level: 0` is preserved** if you pass it explicitly on a call (it is *not* treated as missing).
+
+### Custom schemes
+
+Anything works as a level — numbers, strings, or arrays. Here's a string-based "verbosity" scheme:
 
 ```js
-const
-      msg = 'My message' // Some message
-    , msgDefault = ['basic','warning', 'all' ] // Define default message level
-    , log = createLog (
-                          { 
-                                level: 'basic'                    // Setup a log-level
-                              , defaultMessageLevel: msgDefault   // Setup default message level if not defined
-                          }
-                        , ({ message, level, logLevel }) => { // Custom log-function
-                                  if ( level.includes(logLevel) ) {   // Test if log-level is included in message level
-                                            return message
-                                      }   
-                                  return null
-                            }) 
-    ;
- let 
-         res1 = log ({ message: msg, level: [ 'basic', 'warning', 'all'] })
-      ,  res2 = log ({ message: msg, level: [ 'warning', 'all'] }) // Log-level is not included in message level, so the message will be ignored. Will return null
-      ,  res3 = log ({ message: msg }) // Message level is not set and will get default message level
-      ;
-// res1 -> 'My message'
-// res2 -> null
-// res3 -> 'My message'
+const log = createLog(
+  {
+    level: 'basic',
+    defaultMessageLevel: ['basic', 'warning', 'all'],
+  },
+  ({ message, level, logLevel }) => {
+    if (Array.isArray(level) && level.includes(logLevel)) return message
+    return null
+  }
+)
+
+log({ message: 'x', level: ['basic', 'warning', 'all'] })  // 'x'
+log({ message: 'y', level: ['warning', 'all'] })           // null  — 'basic' not in list
+log({ message: 'z' })                                     // 'z'   — defaultMessageLevel kicks in
 ```
+
+## Message types
+
+With the default handler, the `type` field routes to a specific `console` method:
+
+- `'warn'` → `console.warn`
+- `'error'` → `console.error`
+- anything else (including the default `'log'`) → `console.log`
+
+The default handler formats messages as `[Debug]: <message>` and also returns that string from the call. Custom handlers are free to ignore `type` entirely.
+
+## TypeScript
+
+The package ships with full type definitions in `dist/log.d.ts` — no `@types/...` package needed.
+
+```ts
+import createLog from '@peter.naydenov/log'
+import type { LogFunction, LogInput, LogPayload } from '@peter.naydenov/log'
+
+const log = createLog({ level: 5 })
+log({ message: 'hi', level: 1 })                          // typed LogInput
+```
+
+Available exports: `LogLevel`, `CreateLogOptions`, `LogInput`, `LogPayload`, `LogFunction`.
 
 ## Alternative Ideas
 
-Library `log` is prety abstract, so we can use it in different ways. Here are some ideas:
- - Wrap code for execute it only for specific user role;
+Because the handler is just a function, you can drive any conditional workflow — not just logging. A common pattern is gating code by user role:
+
 ```js
-let
-      a = 'not changes'
-    , user = { role: 'guest' }
-    ;
-const roleSpecific = createLog (
-                                  { 
-                                        defaultMessageLevel: [ 'guest', 'admin', 'owner' ] 
-                                      , level : user.role
-                                    },
-                                  ({ level, logLevel, fn }) => {
-                                          if ( level.includes(logLevel)  ) {   // execute user role specific code..
-                                                  return fn()
-                                              }
-                                    return null
-                              });
+let a = 'not changed'
+const user = { role: 'guest' }
 
-roleSpecific ({ level: [ 'admin', 'owner'], fn: () => a = 'admin changed' }) // We don't need a message property here...
-// ->  a === 'not changes'
-roleSpecific ({ level: [ 'guest'], fn: () => a = 'guest changed' })
-// -> a === 'guest changed'
+const roleSpecific = createLog(
+  {
+    defaultMessageLevel: ['admin', 'owner', 'guest'],
+    level: user.role,
+  },
+  ({ level, logLevel, fn }) => {
+    if (Array.isArray(level) && level.includes(logLevel)) return fn()
+    return null
+  }
+)
 
-roleSpecific ({ fn: () => a = 'general code' }) // When level is not provided, default message level will be used: [ 'guest', 'admin', 'owner' ]
-// -> a === 'general code'
+roleSpecific({ level: ['admin', 'owner'], fn: () => (a = 'admin changed') })
+// a === 'not changed'  — guest role not in the level list
+
+roleSpecific({ level: ['guest'], fn: () => (a = 'guest changed') })
+// a === 'guest changed'
+
+roleSpecific({ fn: () => (a = 'general code') })
+// a === 'general code'  — uses defaultMessageLevel
 ```
 
-
-
 ## Credits
-'@peter.naydenov/log' was created and supported by Peter Naydenov.
 
-
+`@peter.naydenov/log` was created and is maintained by Peter Naydenov.
 
 ## License
-'@peter.naydenov/log' is released under the MIT License.
+
+Released under the [MIT License](./LICENSE).
