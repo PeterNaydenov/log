@@ -1,6 +1,14 @@
 # Release History
 
 
+
+## 1.1.3 (2026-07-29)
+- [x] Migrate mocha tests to vitest;
+- [x] Set a coverage report for vitest;
+- [x] Removes the 'overwrite' section from package.json;
+
+
+
 ## 1.1.2 (2026-07-20)
 - [x] TypeScript was added to the project;
 - [x] Generated d.ts files from jsDoc;
