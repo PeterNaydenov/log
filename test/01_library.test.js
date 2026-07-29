@@ -1,6 +1,6 @@
 
-import { expect } from 'chai'
 import createLog from '../src/main.js'
+
 
 
 describe ( 'Log library', () => {
@@ -12,16 +12,16 @@ it ( 'Log arguments: options and logFunction', () => {
               msg = 'Here we are'
             , log = createLog (
                                 { level:3 },   // Setup a logLevel value(s)
-                                ({ message, level, logLevel }) => { 
-                                            expect(message).to.be.equal(msg)
-                                            expect ( logLevel ).to.be.equal ( 3 )
-                                            expect ( level ).to.be.equal ( 1 )
+                                ({ message, level, logLevel }) => {
+                                            expect(message).toBe(msg)
+                                            expect ( logLevel ).toBe ( 3 )
+                                            expect ( level ).toBe ( 1 )
                                     }
                             )
             ;
 
-        log ({ 
-                message: msg, 
+        log ({
+                message: msg,
                 level : 1  // Setup level(s) for this specific message.
             })
 }) // it log arguments
@@ -29,47 +29,47 @@ it ( 'Log arguments: options and logFunction', () => {
 
 
 it ( 'Different instances of log with own settings', () => {
-        const 
+        const
                   msg1 = 'First'
                 , log1 = createLog ( {level:6},({ message, level, logLevel, type }) => {
-                                            expect ( level ).to.be.equal ( 1 )      // Default level per message if it's not defined at all
-                                            expect ( logLevel ).to.be.equal ( 6 )   // Changed by 'options' object 
-                                            expect ( type ).to.be.equal ( 'log' )   // Type default value if it's not defined
+                                            expect ( level ).toBe ( 1 )      // Default level per message if it's not defined at all
+                                            expect ( logLevel ).toBe ( 6 )   // Changed by 'options' object
+                                            expect ( type ).toBe ( 'log' )   // Type default value if it's not defined
                                             return `log1: ${message}`
                                         })
                 , log2 = createLog ( { defaultMessageLevel: 2 },({ message, level, logLevel }) => {
-                                            expect ( level ).to.be.equal ( 2 )        // Changed by 'options' object - property 'defaultMessageLevel'
-                                            expect ( logLevel ).to.be.equal ( 1000 )  // Default 'logLevel' if it's not defined
+                                            expect ( level ).toBe ( 2 )        // Changed by 'options' object - property 'defaultMessageLevel'
+                                            expect ( logLevel ).toBe ( 1000 )  // Default 'logLevel' if it's not defined
                                             if ( level === 0 )   return 'x'
                                             return `log2: ${message}`
                                         })
                 , log3 = createLog ( {level:0 }, ({ level, logLevel, message }) => {
-                                            expect ( level ).to.be.equal ( 1 )
+                                            expect ( level ).toBe ( 1 )
                                             if ( logLevel === 0 )   return 'x'
                                             return message
                                         })
                 ;
 
         const
-              res1 = log1 ({message:msg1})   // Nothing defined but the message   
+              res1 = log1 ({message:msg1})   // Nothing defined but the message
             , res2 = log2 ({message: msg1})  // Message level is defined in 'options' during log2 creation.
             , res3 = log3 ({message: msg1, level:1 })   // Function log3 is closed during creation. Object 'options' contains (level:0)
             ;
 
-        expect ( res1 ).to.be.equal ( `log1: ${msg1}`)
-        expect ( res2 ).to.be.equal ( `log2: ${msg1}`)
-        expect ( res3 ).to.be.equal ( 'x' )
+        expect ( res1 ).toBe ( `log1: ${msg1}`)
+        expect ( res2 ).toBe ( `log2: ${msg1}`)
+        expect ( res3 ).toBe ( 'x' )
 }) // it different instances
 
 
 
 it ( 'Extra log arguments', () => {
-        const 
+        const
               msg = 'My message'
             , log = createLog ({}, ({extra}) => extra )  // Define log function just to see if parameter is here.
             ;
         const res = log ({ message:msg, extra: 'ole' });
-        expect ( res ).to.be.equal ( 'ole' )
+        expect ( res ).toBe ( 'ole' )
 }) // it extra arguments
 
 
@@ -89,25 +89,25 @@ it ( 'Explicit level 0 is preserved (not overwritten by defaultMessageLevel)', (
             , res3 = log ({ message: msg })  // no level -> should fall back to defaultMessageLevel (1)
             ;
 
-        expect ( res1 ).to.deep.equal ({ level: 0, logLevel: 5 })
-        expect ( res2 ).to.deep.equal ({ level: 1, logLevel: 5 })  // null is treated as "not provided"
-        expect ( res3 ).to.deep.equal ({ level: 1, logLevel: 5 })
+        expect ( res1 ).toEqual ({ level: 0, logLevel: 5 })
+        expect ( res2 ).toEqual ({ level: 1, logLevel: 5 })  // null is treated as "not provided"
+        expect ( res3 ).toEqual ({ level: 1, logLevel: 5 })
 }) // it explicit level 0 is preserved
 
 
 
 it ( 'Default logFunction', () => {
-     const 
+     const
           msg = 'My message'
         , log = createLog ()   // Simplest method to create a log function
         ;
 
-    let 
+    let
           res1 = log ({ message: msg })
         , res2 = log ({ message: msg, level: 1200 })   // Default logLevel is 1000, so message with level 1200 should be hidden
         ;
-    expect ( res1 ).to.be.equal ( '[Debug]: My message' )
-    expect ( res2 ).to.be.null
+    expect ( res1 ).toBe ( '[Debug]: My message' )
+    expect ( res2 ).toBeNull ()
 }) // it default logFunction
 
 
@@ -121,19 +121,19 @@ it ( 'Custom level system based on words', () => {
                              , ({ message, level, logLevel }) => {
                                         if ( level.includes(logLevel) ) {
                                                  return message
-                                            }   
+                                            }
                                         return null
-                                  }) 
+                                  })
           ;
-    let 
+    let
          res1 = log ({ message: msg, level: [ 'basic', 'warning', 'all'] })
       ,  res2 = log ({ message: msg, level: [ 'warning', 'all'] })
       ,  res3 = log ({ message: msg })
       ;
 
-    expect ( res1 ).to.be.equal ( msg )
-    expect ( res2 ).to.be.null
-    expect ( res3 ).to.be.equal ( msg )
+    expect ( res1 ).toBe ( msg )
+    expect ( res2 ).toBeNull ()
+    expect ( res3 ).toBe ( msg )
 }) // it Custom level system based on words
 
 
@@ -145,9 +145,9 @@ it ( 'Log as a wrapper for user role specific code', () => {
          ;
     const
         roleSpecific = createLog (
-                                  { 
+                                  {
                                         defaultMessageLevel: [ 'admin', 'owner', 'guest' ]
-                                      , level : user.role 
+                                      , level : user.role
                                     },
                                   ({ level, logLevel, fn }) => {
                                           if ( level.includes(logLevel)  ) {   // execute user role specific code..
@@ -157,15 +157,14 @@ it ( 'Log as a wrapper for user role specific code', () => {
                               })
 
     roleSpecific ({ level: [ 'admin', 'owner'], fn: () => a = 'admin changed' })
-    expect ( a ).to.be.equal ( 'not changes' )
+    expect ( a ).toBe ( 'not changes' )
 
     roleSpecific ({ level: [ 'guest'], fn: () => a = 'guest changed' })
-    expect ( a ).to.be.equal ( 'guest changed' )
-    
+    expect ( a ).toBe ( 'guest changed' )
+
     roleSpecific({ fn:() => a = 'general code'})
-    expect ( a ).to.be.equal ( 'general code' )
+    expect ( a ).toBe ( 'general code' )
 }) // it Log as a wrapper for user role specific code
 
 }) // describe
-
 
